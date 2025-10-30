@@ -1,11 +1,13 @@
 package com.oliveiralucas.barber_time.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -16,31 +18,48 @@ import java.time.LocalDateTime;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    private String id;
+    private Long id;
 
 
+    @NotBlank
+    @Size(max = 120)
     @Column(name = "name", nullable = false, length = 120)
     private String name;
 
+    @NotBlank
+    @Email
+    @Size(max = 150)
     @Column(name = "email", nullable = false, length = 150, unique = true)
     private String email;
 
+    @NotBlank
+    @Size(max = 20)
     @Column(name = "phone", nullable = false, length = 20)
     private String phone;
 
-    @Column(name = "birthday",  nullable = false)
+    @NotNull
+    @Column(name = "birthday", nullable = false)
     private LocalDate birthday;
 
+    @NotBlank
+    @Size(max = 255)
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "cpf", nullable = false, length = 11, unique = true)
+    @NotBlank
+    @Size(min = 11, max = 11)
+    @Column(name = "cpf", nullable = false, unique = true, length = 11)
     private String cpf;
 
-    @Column(name = "password", nullable = false, length = 30)
+    @NotBlank
+    @Size(min = 8, max = 60)
+    @Column(name = "password", nullable = false, length = 60)
     private String password;
+
+    @Column(name = "rating", precision = 3, scale = 1)
+    private BigDecimal rating;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
