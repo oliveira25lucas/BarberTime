@@ -26,7 +26,7 @@ public class CustomerService {
 
     public Customer findById(Long id) {
         return customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new IllegalStateException("Customer " + id + " not found"));
     }
 
     public Customer update(Long id, Customer customer) {
