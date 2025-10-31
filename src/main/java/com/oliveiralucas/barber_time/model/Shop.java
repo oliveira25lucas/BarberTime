@@ -1,5 +1,6 @@
 package com.oliveiralucas.barber_time.model;
 
+import com.oliveiralucas.barber_time.enums.StatusEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -30,7 +31,7 @@ public class Shop {
 
     @NotNull
     @Size(min = 14, max = 14)
-    @Column(name = "cnpj", nullable = false, unique = true, length = 11)
+    @Column(name = "cnpj", nullable = false, unique = true, length = 14)
     private String cnpj;
 
     @NotBlank
@@ -54,8 +55,15 @@ public class Shop {
     @Column(name = "password", nullable = false, length = 60)
     private String password;
 
-    @Column(name = "rating", precision = 3, scale = 1)
-    private BigDecimal rating;
+    @Column(name = "rating_average", precision = 3, scale = 1)
+    private BigDecimal ratingAverage;
+
+    @Column(name = "rating_count", nullable = false)
+    private int ratingCount = 0;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private StatusEnum status = StatusEnum.ACTIVE;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

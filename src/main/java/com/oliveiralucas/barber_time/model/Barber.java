@@ -71,6 +71,7 @@ public class Barber {
     @Column(name = "rating_count", nullable = false)
     private int ratingCount = 0;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusEnum status = StatusEnum.ACTIVE;
 
