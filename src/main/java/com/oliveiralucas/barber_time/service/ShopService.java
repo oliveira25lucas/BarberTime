@@ -33,6 +33,7 @@ public class ShopService {
         existingShop.setEmail(shop.getEmail());
         existingShop.setPhone(shop.getPhone());
         existingShop.setAddress(shop.getAddress());
+        existingShop.setStatus(shop.getStatus());
         return shopRepository.save(existingShop);
     }
 

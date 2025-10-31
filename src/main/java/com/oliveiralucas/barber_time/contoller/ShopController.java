@@ -32,13 +32,13 @@ public class ShopController {
         return shopService.findById(id);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/update/{id}")
     public Shop updateShop(@PathVariable Long id,@RequestBody Shop shop) {
         return shopService.update(id, shop);
 
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/delete/{id}")
     public void deleteShopById(@PathVariable Long id) {
         shopService.delete(id);
     }

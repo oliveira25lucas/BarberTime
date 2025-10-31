@@ -34,6 +34,7 @@ public class CustomerService {
         existingCustomer.setEmail(customer.getEmail());
         existingCustomer.setPhone(customer.getPhone());
         existingCustomer.setAddress(customer.getAddress());
+        existingCustomer.setStatus(customer.getStatus());
         return customerRepository.save(existingCustomer);
     }
 
