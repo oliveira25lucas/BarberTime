@@ -1,6 +1,7 @@
 package com.oliveiralucas.barber_time.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.oliveiralucas.barber_time.enums.GenderEnum;
 import com.oliveiralucas.barber_time.enums.StatusEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -15,6 +16,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "barber")
@@ -76,6 +78,14 @@ public class Barber {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusEnum status = StatusEnum.ACTIVE;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", nullable = false)
+    private GenderEnum gender;
+
+    @Column(name = "skills")
+    private List<String> skills;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

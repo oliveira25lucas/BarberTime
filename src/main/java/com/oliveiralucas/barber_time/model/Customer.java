@@ -1,5 +1,6 @@
 package com.oliveiralucas.barber_time.model;
 
+import com.oliveiralucas.barber_time.enums.GenderEnum;
 import com.oliveiralucas.barber_time.enums.StatusEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -67,6 +68,11 @@ public class Customer {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusEnum status = StatusEnum.ACTIVE;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", nullable = false)
+    private GenderEnum gender;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
