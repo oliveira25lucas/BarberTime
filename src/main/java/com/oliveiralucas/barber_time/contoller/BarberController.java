@@ -7,13 +7,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("api/v1/barber")
 public class BarberController {
 
-    BarberService barberService;
+    private final BarberService barberService;
 
-    @PostMapping("create")
+    public BarberController(BarberService barberService) {
+        this.barberService = barberService;
+    }
+
+    @PostMapping()
     public Barber createBarber(@RequestBody Barber barber) {
         return barberService.createBarber(barber);
     }

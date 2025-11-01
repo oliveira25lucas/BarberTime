@@ -1,5 +1,6 @@
 package com.oliveiralucas.barber_time.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.oliveiralucas.barber_time.enums.StatusEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -28,6 +29,7 @@ public class Barber {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "shop_id", nullable = false, foreignKey = @ForeignKey(name = "fk_barber_shop"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Shop shop;
 
     @NotBlank
