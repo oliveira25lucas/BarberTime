@@ -1,5 +1,6 @@
 package com.oliveiralucas.barber_time.service;
 
+import com.oliveiralucas.barber_time.exception.NotFoundException;
 import com.oliveiralucas.barber_time.model.Shop;
 import com.oliveiralucas.barber_time.repository.ShopRepository;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class ShopService {
 
     public Shop findById(Long id) {
         return shopRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Shop " + id + " not found"));}
+                .orElseThrow(() -> new NotFoundException("Shop " + id + " not found"));}
 
     public List<Shop> findAll() {
         return shopRepository.findAll();

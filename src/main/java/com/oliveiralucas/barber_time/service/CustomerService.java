@@ -1,5 +1,6 @@
 package com.oliveiralucas.barber_time.service;
 
+import com.oliveiralucas.barber_time.exception.NotFoundException;
 import com.oliveiralucas.barber_time.model.Customer;
 import com.oliveiralucas.barber_time.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class CustomerService {
 
     public Customer findById(Long id) {
         return customerRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Customer " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Customer " + id + " not found"));
     }
 
     public Customer update(Long id, Customer customer) {

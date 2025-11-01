@@ -1,5 +1,6 @@
 package com.oliveiralucas.barber_time.service;
 
+import com.oliveiralucas.barber_time.exception.NotFoundException;
 import com.oliveiralucas.barber_time.model.Barber;
 import com.oliveiralucas.barber_time.model.Barber;
 import com.oliveiralucas.barber_time.repository.BarberRepository;
@@ -27,7 +28,7 @@ public class BarberService {
 
     public Barber findById(Long id) {
         return barberRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Barber " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Barber " + id + " not found"));
     }
 
     public Barber update(Long id, Barber barber) {

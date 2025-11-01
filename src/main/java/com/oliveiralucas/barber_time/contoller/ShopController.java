@@ -27,7 +27,7 @@ public class ShopController {
         return shopService.findAll();
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public Shop getShopById(@PathVariable Long id) {
         return shopService.findById(id);
     }
