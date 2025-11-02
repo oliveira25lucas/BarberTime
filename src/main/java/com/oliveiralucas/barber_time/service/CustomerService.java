@@ -4,8 +4,6 @@ import com.oliveiralucas.barber_time.data.dto.CustomerDTO;
 import com.oliveiralucas.barber_time.exception.NotFoundException;
 import com.oliveiralucas.barber_time.mapper.CustomerMapper;
 import com.oliveiralucas.barber_time.model.Customer;
-import com.oliveiralucas.barber_time.model.Customer;
-import com.oliveiralucas.barber_time.repository.CustomerRepository;
 import com.oliveiralucas.barber_time.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

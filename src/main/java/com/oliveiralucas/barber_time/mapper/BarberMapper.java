@@ -8,7 +8,8 @@ import java.util.List;
 
 @Mapper(
         componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        uses = ShopMapper.class
 )
 public interface BarberMapper {
 

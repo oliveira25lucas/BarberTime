@@ -16,7 +16,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "barber")
@@ -44,6 +43,10 @@ public class Barber {
     @Size(max = 150)
     @Column(name = "email", nullable = false, length = 150, unique = true)
     private String email;
+
+    @Size(max = 200)
+    @Column(name = "description", length = 200)
+    private String description;
 
     @NotBlank
     @Size(max = 20)

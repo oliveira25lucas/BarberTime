@@ -2,7 +2,6 @@ package com.oliveiralucas.barber_time.data.dto;
 
 import com.oliveiralucas.barber_time.enums.GenderEnum;
 import com.oliveiralucas.barber_time.enums.StatusEnum;
-import com.oliveiralucas.barber_time.model.Shop;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,9 +14,10 @@ import java.time.LocalDateTime;
 public class BarberDTO {
 
     private Long id;
-    private Shop shop;
+    private ShopDTO shop;
     private String name;
     private String email;
+    private String description;
     private String phone;
     private LocalDate birthday;
     private String address;

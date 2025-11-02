@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/barberDTO")
+@RequestMapping("api/v1/barber")
 public class BarberController {
 
     private final BarberService barberService;
