@@ -73,7 +73,7 @@ public class Barber {
     private BigDecimal ratingAverage;
 
     @Column(name = "rating_count", nullable = false)
-    private int ratingCount = 0;
+    private Integer ratingCount = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -83,9 +83,6 @@ public class Barber {
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     private GenderEnum gender;
-
-    @Column(name = "skills")
-    private List<String> skills;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

@@ -63,7 +63,7 @@ public class Customer {
     private BigDecimal ratingAverage;
 
     @Column(name = "rating_count", nullable = false)
-    private int ratingCount = 0;
+    private Integer ratingCount = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

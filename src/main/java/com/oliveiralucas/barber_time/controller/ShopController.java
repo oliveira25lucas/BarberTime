@@ -1,7 +1,8 @@
-package com.oliveiralucas.barber_time.contoller;
+package com.oliveiralucas.barber_time.controller;
 
-import com.oliveiralucas.barber_time.model.Shop;
+import com.oliveiralucas.barber_time.data.dto.ShopDTO;
 import com.oliveiralucas.barber_time.service.ShopService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,27 +19,28 @@ public class ShopController {
     }
 
     @PostMapping
-    public Shop createShop(@RequestBody Shop shop) {
-        return shopService.create(shop);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ShopDTO create(@RequestBody ShopDTO dto) {
+        return shopService.create(dto);
     }
 
     @GetMapping
-    public List<Shop> getAllShops() {
+    public List<ShopDTO> list() {
         return shopService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Shop getShopById(@PathVariable Long id) {
+    public ShopDTO getShopById(@PathVariable Long id) {
         return shopService.findById(id);
     }
 
     @PutMapping("/update/{id}")
-    public Shop updateShop(@PathVariable Long id,@RequestBody Shop shop) {
+    public ShopDTO updateShop(@PathVariable Long id, @RequestBody ShopDTO shop) {
         return shopService.update(id, shop);
-
     }
 
     @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteShopById(@PathVariable Long id) {
         shopService.delete(id);
     }

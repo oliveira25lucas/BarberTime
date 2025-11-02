@@ -1,45 +1,57 @@
 package com.oliveiralucas.barber_time.service;
 
+import com.oliveiralucas.barber_time.data.dto.ShopDTO;
 import com.oliveiralucas.barber_time.exception.NotFoundException;
+import com.oliveiralucas.barber_time.mapper.ShopMapper;
 import com.oliveiralucas.barber_time.model.Shop;
 import com.oliveiralucas.barber_time.repository.ShopRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class ShopService {
 
     private final ShopRepository shopRepository;
+    private final ShopMapper shopMapper;
 
-    public ShopService(ShopRepository shopRepository) {
+    public ShopService(ShopRepository shopRepository, ShopMapper shopMapper) {
         this.shopRepository = shopRepository;
+        this.shopMapper = shopMapper;
     }
 
-    public Shop create(Shop shop) {
-        shop.setId(null);
-        return shopRepository.save(shop);
+    @Transactional(readOnly = true)
+    public List<ShopDTO> findAll() {
+        return shopMapper.toDTO(shopRepository.findAll());
     }
 
-    public Shop findById(Long id) {
-        return shopRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Shop " + id + " not found"));}
-
-    public List<Shop> findAll() {
-        return shopRepository.findAll();
+    @Transactional(readOnly = true)
+    public ShopDTO findById(Long id) {
+        Shop entity = shopRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Shop id " + id + " not found"));
+        return shopMapper.toDTO(entity);
     }
 
-    public Shop update(Long id, Shop shop) {
-        Shop existingShop = findById(id);
-        existingShop.setEmail(shop.getEmail());
-        existingShop.setPhone(shop.getPhone());
-        existingShop.setAddress(shop.getAddress());
-        existingShop.setStatus(shop.getStatus());
-        return shopRepository.save(existingShop);
+    public ShopDTO create(ShopDTO dto) {
+        Shop entity = shopMapper.toEntity(dto);
+        entity = shopRepository.save(entity);
+        return shopMapper.toDTO(entity);
+    }
+
+    public ShopDTO update(Long id, ShopDTO dto) {
+        Shop entity = shopRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Shop id " + id + " not found"));
+        shopMapper.updateFromDto(dto, entity);
+        entity = shopRepository.save(entity);
+        return shopMapper.toDTO(entity);
     }
 
     public void delete(Long id) {
-        Shop shop = findById(id);
+        if (!shopRepository.existsById(id)) {
+            throw new NotFoundException("Shop id " + id + " not found");
+        }
         shopRepository.deleteById(id);
     }
 }

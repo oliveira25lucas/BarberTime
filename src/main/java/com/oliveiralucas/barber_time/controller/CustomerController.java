@@ -1,7 +1,8 @@
-package com.oliveiralucas.barber_time.contoller;
+package com.oliveiralucas.barber_time.controller;
 
-import com.oliveiralucas.barber_time.model.Customer;
+import com.oliveiralucas.barber_time.data.dto.CustomerDTO;
 import com.oliveiralucas.barber_time.service.CustomerService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,26 +19,28 @@ public class CustomerController {
     }
 
     @PostMapping
-    public Customer createCustomer(@RequestBody Customer customer) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public CustomerDTO createCustomer(@RequestBody CustomerDTO customer) {
         return customerService.create(customer);
     }
 
     @GetMapping()
-    public List<Customer> getAllCustomers() {
+    public List<CustomerDTO> getAllCustomers() {
         return customerService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Customer getCustomerById(@PathVariable Long id) {
+    public CustomerDTO getCustomerById(@PathVariable Long id) {
         return customerService.findById(id);
     }
 
     @PutMapping("/update/{id}")
-    public Customer updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
+    public CustomerDTO updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customer) {
         return customerService.update(id, customer);
     }
 
     @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCustomer(@PathVariable Long id) {
         customerService.delete(id);
     }

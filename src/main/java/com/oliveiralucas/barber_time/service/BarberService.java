@@ -1,10 +1,15 @@
 package com.oliveiralucas.barber_time.service;
 
+import com.oliveiralucas.barber_time.data.dto.BarberDTO;
 import com.oliveiralucas.barber_time.exception.NotFoundException;
+import com.oliveiralucas.barber_time.mapper.BarberMapper;
+import com.oliveiralucas.barber_time.model.Barber;
 import com.oliveiralucas.barber_time.model.Barber;
 import com.oliveiralucas.barber_time.model.Barber;
 import com.oliveiralucas.barber_time.repository.BarberRepository;
+import com.oliveiralucas.barber_time.repository.BarberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,36 +17,43 @@ import java.util.List;
 public class BarberService {
 
     private final BarberRepository barberRepository;
+    private final BarberMapper barberMapper;
 
-    public BarberService(BarberRepository barberRepository) {
+    public BarberService(BarberRepository barberRepository, BarberMapper barberMapper) {
         this.barberRepository = barberRepository;
+        this.barberMapper = barberMapper;
     }
 
-    public Barber createBarber(Barber barber) {
-        barber.setId(null);
-        return barberRepository.save(barber);
+    @Transactional(readOnly = true)
+    public List<BarberDTO> findAllBarbers() {
+        return barberMapper.toDTO(barberRepository.findAll());
     }
 
-    public List<Barber> findAllBarbers() {
-        return barberRepository.findAll();
+    @Transactional(readOnly = true)
+    public BarberDTO findById(Long id) {
+        Barber entity = barberRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Barber id " + id + " not found"));
+        return barberMapper.toDTO(entity);
     }
 
-    public Barber findById(Long id) {
-        return barberRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Barber " + id + " not found"));
+    public BarberDTO createBarber(BarberDTO dto) {
+        Barber entity = barberMapper.toEntity(dto);
+        entity = barberRepository.save(entity);
+        return barberMapper.toDTO(entity);
     }
 
-    public Barber update(Long id, Barber barber) {
-        Barber existingBarber = findById(id);
-        existingBarber.setEmail(barber.getEmail());
-        existingBarber.setPhone(barber.getPhone());
-        existingBarber.setAddress(barber.getAddress());
-        existingBarber.setStatus(barber.getStatus());
-        return barberRepository.save(existingBarber);
+    public BarberDTO update(Long id, BarberDTO dto) {
+        Barber entity = barberRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Barber id " + id + " not found"));
+        barberMapper.updateFromDto(dto, entity);
+        entity = barberRepository.save(entity);
+        return barberMapper.toDTO(entity);
     }
 
     public void delete(Long id) {
-        barberRepository.findById(id);
+        if (!barberRepository.existsById(id)) {
+            throw new NotFoundException("Barber id " + id + " not found");
+        }
         barberRepository.deleteById(id);
     }
 }
