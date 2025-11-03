@@ -35,6 +35,7 @@ public class CustomerService {
 
     public CustomerDTO create(CustomerDTO dto) {
         Customer entity = customerMapper.toEntity(dto);
+        entity.setPassword(dto.getPassword());
         entity = customerRepository.save(entity);
         return customerMapper.toDTO(entity);
     }

@@ -3,7 +3,9 @@ package com.oliveiralucas.barber_time.service;
 import com.oliveiralucas.barber_time.data.dto.BarberServiceDTO;
 import com.oliveiralucas.barber_time.exception.NotFoundException;
 import com.oliveiralucas.barber_time.mapper.BarberServiceMapper;
+import com.oliveiralucas.barber_time.model.Barber;
 import com.oliveiralucas.barber_time.model.BarberService;
+import com.oliveiralucas.barber_time.repository.BarberRepository;
 import com.oliveiralucas.barber_time.repository.BarberServiceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +16,12 @@ import java.util.List;
 public class BarberServiceService {
 
     private final BarberServiceRepository barberServiceRepository;
+    private final BarberRepository barberRepository;
     private final BarberServiceMapper barberServiceMapper;
 
-    public BarberServiceService(BarberServiceRepository barberServiceRepository, BarberServiceMapper barberServiceMapper) {
+    public BarberServiceService(BarberServiceRepository barberServiceRepository, BarberRepository barberRepository, BarberServiceMapper barberServiceMapper) {
         this.barberServiceRepository = barberServiceRepository;
+        this.barberRepository = barberRepository;
         this.barberServiceMapper = barberServiceMapper;
     }
 
@@ -35,6 +39,7 @@ public class BarberServiceService {
 
     public BarberServiceDTO createBarberService(BarberServiceDTO dto) {
         BarberService entity = barberServiceMapper.toEntity(dto);
+        entity.setBarber(resolveBarber(dto));
         entity = barberServiceRepository.save(entity);
         return barberServiceMapper.toDTO(entity);
     }
@@ -52,5 +57,15 @@ public class BarberServiceService {
             throw new NotFoundException("Barber Service id " + id + " not found");
         }
         barberServiceRepository.deleteById(id);
+    }
+
+    private Barber resolveBarber(BarberServiceDTO dto) {
+        if (dto.getBarber() == null || dto.getBarber().getId() == null) {
+            throw new NotFoundException("Barber id must be provided to associate a service");
+        }
+
+        Long barberId = dto.getBarber().getId();
+        return barberRepository.findById(barberId)
+                .orElseThrow(() -> new NotFoundException("Barber id " + barberId + " not found"));
     }
 }

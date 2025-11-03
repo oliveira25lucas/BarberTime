@@ -1,5 +1,6 @@
 package com.oliveiralucas.barber_time.data.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.oliveiralucas.barber_time.enums.GenderEnum;
 import com.oliveiralucas.barber_time.enums.StatusEnum;
 import lombok.Getter;
@@ -17,6 +18,8 @@ public class BarberDTO {
     private ShopDTO shop;
     private String name;
     private String email;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
     private String description;
     private String phone;
     private LocalDate birthday;

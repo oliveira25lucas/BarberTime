@@ -36,6 +36,7 @@ public class ShopService {
 
     public ShopDTO create(ShopDTO dto) {
         Shop entity = shopMapper.toEntity(dto);
+        entity.setPassword(dto.getPassword());
         entity = shopRepository.save(entity);
         return shopMapper.toDTO(entity);
     }
