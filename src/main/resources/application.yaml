@@ -14,6 +14,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
+    open-in-view: false
     properties:
       hibernate.format_sql: true
+
+logging:
+  level:
+    root: INFO
+
+springdoc:
+  paths-to-match: /api/**/v1/**
+  swagger-ui:
+    use-root-path: true
