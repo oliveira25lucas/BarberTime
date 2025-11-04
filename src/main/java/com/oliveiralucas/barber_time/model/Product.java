@@ -3,8 +3,6 @@ package com.oliveiralucas.barber_time.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.oliveiralucas.barber_time.enums.StatusEnum;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -16,11 +14,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "barber_service",
-        uniqueConstraints=@UniqueConstraint(name="uk_barber_name", columnNames={"barber_id","name"}))
+@Table(name= "product",
+        uniqueConstraints=@UniqueConstraint(name="uk_product_name", columnNames={"shop_id","name"}))
 @Getter
 @Setter
-public class BarberService {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,22 +26,20 @@ public class BarberService {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "barber_id", nullable = false, foreignKey = @ForeignKey(name = "fk_bs_barber"))
+    @JoinColumn(name = "shop_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product"))
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Barber barber;
+    private Shop shop;
 
     @NotBlank
     @Column(name = "name", nullable = false, length = 120)
     private String name;
 
-    @Column(name = "description", length = 240)
+    @Column(name = "description", length = 500)
     private String description;
 
     @NotNull
-    @Min(1)
-    @Max(480)
-    @Column(name = "duration_min", nullable = false)
-    private Integer durationMin;
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
 
     @NotNull
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
@@ -60,5 +56,4 @@ public class BarberService {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
 }
