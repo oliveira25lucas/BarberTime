@@ -18,7 +18,7 @@ public interface ProductMapper {
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
-            @Mapping(target = "shop", ignore = true),              // resolvido no service
+            @Mapping(target = "shop", ignore = true),
             @Mapping(target = "name", source = "name"),
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "quantity", source = "quantity"),

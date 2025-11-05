@@ -1,7 +1,9 @@
 package com.oliveiralucas.barber_time.mapper;
 
 import com.oliveiralucas.barber_time.data.dto.BarberServiceDTO;
+import com.oliveiralucas.barber_time.data.dto.ShopDTO;
 import com.oliveiralucas.barber_time.model.BarberService;
+import com.oliveiralucas.barber_time.model.Shop;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -16,7 +18,17 @@ public interface BarberServiceMapper {
     BarberServiceDTO toDTO(BarberService entity);
     List<BarberServiceDTO> toDTO(List<BarberService> entities);
 
-    @Mapping(target = "id", ignore = true)
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "barber", ignore = true),
+            @Mapping(target = "name", source = "name"),
+            @Mapping(target = "description", source = "description"),
+            @Mapping(target = "durationMin", source = "durationMin"),
+            @Mapping(target = "price", source = "price"),
+            @Mapping(target = "status", source = "status"),
+            @Mapping(target = "createdAt", source = "createdAt"),
+            @Mapping(target = "updatedAt", source = "updatedAt")
+    })
     BarberService toEntity(BarberServiceDTO dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
