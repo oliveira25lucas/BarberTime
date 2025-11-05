@@ -1,6 +1,7 @@
 package com.oliveiralucas.barber_time.service;
 
 import com.oliveiralucas.barber_time.data.dto.BarberDTO;
+import com.oliveiralucas.barber_time.data.dto.ProductDTO;
 import com.oliveiralucas.barber_time.exception.NotFoundException;
 import com.oliveiralucas.barber_time.mapper.BarberMapper;
 import com.oliveiralucas.barber_time.model.Barber;
@@ -10,7 +11,11 @@ import com.oliveiralucas.barber_time.repository.ShopRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 @Service
 public class BarberService {
@@ -41,6 +46,7 @@ public class BarberService {
         Barber entity = barberMapper.toEntity(dto);
         entity.setShop(resolveShop(dto));
         entity.setPassword(dto.getPassword());
+        validateWorkingHours(entity, entity.getShop());
         entity = barberRepository.save(entity);
         return barberMapper.toDTO(entity);
     }
@@ -68,5 +74,32 @@ public class BarberService {
         Long shopId = dto.getShop().getId();
         return shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Shop id " + shopId + " not found"));
+    }
+
+    private void validateWorkingHours(Barber barber, Shop shop) {
+        requireNonNull(barber, "Barber must not be null");
+        requireNonNull(shop, "Shop must not be null");
+        LocalTime shopOpen = requireNonNull(shop.getOpenTime(), "Shop open time must be provided");
+        LocalTime shopClose = requireNonNull(shop.getCloseTime(), "Shop close time must be provided");
+        LocalTime startShift = requireNonNull(barber.getStartShift(), "Barber start shift must be provided");
+        LocalTime endShift = requireNonNull(barber.getEndShift(), "Barber end shift must be provided");
+        LocalTime startLunch = requireNonNull(barber.getStartLunch(), "Barber lunch start must be provided");
+        LocalTime endLunch = requireNonNull(barber.getEndLunch(), "Barber lunch end must be provided");
+
+        if (!startShift.isBefore(endShift)) {
+            throw new IllegalArgumentException("Barber shift start time must be before end time");
+        }
+        if (!startLunch.isBefore(endLunch)) {
+            throw new IllegalArgumentException("Barber lunch start time must be before end time");
+        }
+        if (startShift.isBefore(shopOpen) || endShift.isAfter(shopClose)) {
+            throw new IllegalArgumentException("Barber shift must be within shop working hours");
+        }
+        if (startLunch.isBefore(shopOpen) || endLunch.isAfter(shopClose)) {
+            throw new IllegalArgumentException("Barber lunch must be within shop working hours");
+        }
+        if (startLunch.isBefore(startShift) || endLunch.isAfter(endShift)) {
+            throw new IllegalArgumentException("Barber lunch must occur during the barber's shift");
+        }
     }
 }

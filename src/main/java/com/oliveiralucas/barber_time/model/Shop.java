@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "shop")
@@ -60,6 +61,14 @@ public class Shop {
 
     @Column(name = "rating_count", nullable = false)
     private Integer ratingCount = 0;
+
+    @NotNull
+    @Column(name = "open_time", nullable = false)
+    private LocalTime openTime;
+
+    @NotNull
+    @Column(name = "close_time", nullable = false)
+    private LocalTime closeTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

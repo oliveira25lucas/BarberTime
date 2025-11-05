@@ -16,6 +16,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "barber")
@@ -86,6 +87,22 @@ public class Barber {
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
     private GenderEnum gender;
+
+    @NotNull
+    @Column(name = "start_shift", nullable = false)
+    private LocalTime startShift;
+
+    @NotNull
+    @Column(name = "end_shift", nullable = false)
+    private LocalTime endShift;
+
+    @NotNull
+    @Column(name = "start_lunch", nullable = false)
+    private LocalTime startLunch;
+
+    @NotNull
+    @Column(name = "end_lunch", nullable = false)
+    private LocalTime endLunch;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
