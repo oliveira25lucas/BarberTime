@@ -26,7 +26,7 @@ public class Product {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "shop_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product"))
+    @JoinColumn(name = "shop_id", nullable = false, foreignKey = @ForeignKey(name = "fk_product_shop"))
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Shop shop;
 
