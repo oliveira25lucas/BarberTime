@@ -9,6 +9,7 @@ import com.oliveiralucas.barber_time.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -59,6 +60,7 @@ public class AppointmentService {
         entity.setBarberService(resolveBarberService(appointmentDTO));
         entity.setProduct(resolveProduct(appointmentDTO));
         bookAppointment(entity, entity.getBarber(), entity.getBarberService());
+        totalPrice(entity, entity.getBarberService(), entity.getProduct());
         entity = appointmentRepository.save(entity);
         return appointmentMapper.toDTO(entity);
     }
@@ -123,6 +125,19 @@ public class AppointmentService {
         Long productId = dto.getProduct().getId();
         return productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Product id " + productId + " not found"));
+    }
+
+    private void totalPrice(Appointment appointment, BarberService barberService, Product product) {
+        requireNonNull(appointment, "Appointment must not be null");
+        requireNonNull(barberService, "BarberService must not be null");
+
+        BigDecimal totalPrice;
+        BigDecimal productPrice = product.getPrice();
+        BigDecimal barberServicePrice = requireNonNull(barberService.getPrice(), "BarberService price must not be null");
+
+        totalPrice = barberServicePrice.add(productPrice);
+
+        appointment.setTotalPrice(totalPrice);
     }
 
     private void bookAppointment(Appointment appointment, Barber barber, BarberService barberService) {
