@@ -1,6 +1,7 @@
 package com.oliveiralucas.barber_time.service;
 
 import com.oliveiralucas.barber_time.data.dto.AppointmentDTO;
+import com.oliveiralucas.barber_time.enums.AppointmentStatusEnum;
 import com.oliveiralucas.barber_time.exception.NotFoundException;
 import com.oliveiralucas.barber_time.mapper.AppointmentMapper;
 import com.oliveiralucas.barber_time.model.*;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import static com.oliveiralucas.barber_time.enums.AppointmentStatusEnum.SCHEDULED;
 import static java.util.Objects.requireNonNull;
 
 @Service
@@ -59,6 +61,7 @@ public class AppointmentService {
         entity.setBarber(resolveBarber(appointmentDTO));
         entity.setBarberService(resolveBarberService(appointmentDTO));
         entity.setProduct(resolveProduct(appointmentDTO));
+        validateAssociations(entity);
         bookAppointment(entity, entity.getBarber(), entity.getBarberService());
         totalPrice(entity, entity.getBarberService(), entity.getProduct());
         entity = appointmentRepository.save(entity);
@@ -140,6 +143,38 @@ public class AppointmentService {
         appointment.setTotalPrice(totalPrice);
     }
 
+    private void validateAssociations(Appointment appointment){
+        Shop shop = requireNonNull(appointment.getShop(), "Appointment shop must be provided");
+        Long shopId = requireNonNull(shop.getId(), "Appointment shop id must be provided");
+
+        Barber barber = requireNonNull(appointment.getBarber(), "Appointment barber must be provided");
+        Barber barberFromService = requireNonNull(appointment.getBarberService(), "Appointment barber service must be provided").getBarber();
+
+        Shop barberShop = requireNonNull(barber.getShop(), "Barber must belong to a shop");
+        if (!shopId.equals(requireNonNull(barberShop.getId(), "Barber shop id must be provided"))) {
+            throw new IllegalArgumentException("Barber does not belong to the selected shop");
+        }
+
+        Barber serviceBarber = requireNonNull(barberFromService, "Barber service must be associated to a barber");
+        Long serviceBarberId = requireNonNull(serviceBarber.getId(), "Barber service barber id must be provided");
+        if (!serviceBarberId.equals(requireNonNull(barber.getId(), "Barber id must be provided"))) {
+            throw new IllegalArgumentException("Barber service does not belong to the selected barber");
+        }
+
+        Shop serviceBarberShop = requireNonNull(serviceBarber.getShop(), "Barber service barber must belong to a shop");
+        if (!shopId.equals(requireNonNull(serviceBarberShop.getId(), "Barber service barber shop id must be provided"))) {
+            throw new IllegalArgumentException("Barber service does not belong to the selected shop");
+        }
+
+        Product product = appointment.getProduct();
+        if (product != null) {
+            Shop productShop = requireNonNull(product.getShop(), "Product must belong to a shop");
+            if (!shopId.equals(requireNonNull(productShop.getId(), "Product shop id must be provided"))) {
+                throw new IllegalArgumentException("Product does not belong to the selected shop");
+            }
+        }
+    }
+
     private void bookAppointment(Appointment appointment, Barber barber, BarberService barberService) {
 
         requireNonNull(appointment, "Appointment must not be null");
@@ -173,6 +208,17 @@ public class AppointmentService {
             throw new IllegalArgumentException("Appointment overlaps barber lunch break");
         }
 
+        List<AppointmentStatusEnum> ignoredStatuses = List.of(AppointmentStatusEnum.CANCELLED,
+                AppointmentStatusEnum.NO_SHOW);
+
+        boolean barberBusy = appointmentRepository
+                .existsByBarberIdAndAppointmentStatusNotInAndStartAtLessThanAndEndAtGreaterThan(barber.getId(),
+                        ignoredStatuses, end, start);
+
+        if (barberBusy) {
+            throw new IllegalArgumentException("Barber already has an appointment for the selected time");
+        }
+        appointment.setAppointmentStatus(SCHEDULED);
         appointment.setEndAt(end);
     }
 
