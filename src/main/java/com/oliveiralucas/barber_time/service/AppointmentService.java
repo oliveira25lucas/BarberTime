@@ -9,7 +9,12 @@ import com.oliveiralucas.barber_time.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 @Service
 @Transactional(readOnly = true)
@@ -53,6 +58,7 @@ public class AppointmentService {
         entity.setBarber(resolveBarber(appointmentDTO));
         entity.setBarberService(resolveBarberService(appointmentDTO));
         entity.setProduct(resolveProduct(appointmentDTO));
+        bookAppointment(entity, entity.getBarber(), entity.getBarberService());
         entity = appointmentRepository.save(entity);
         return appointmentMapper.toDTO(entity);
     }
@@ -98,7 +104,7 @@ public class AppointmentService {
         }
         Long barberId = dto.getBarber().getId();
         return barberRepository.findById(barberId)
-                .orElseThrow(() -> new NotFoundException("Shop id " + barberId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Barber id " + barberId + " not found"));
     }
 
     private BarberService resolveBarberService(AppointmentDTO dto) {
@@ -117,5 +123,47 @@ public class AppointmentService {
         Long productId = dto.getProduct().getId();
         return productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Product id " + productId + " not found"));
+    }
+
+    private void bookAppointment(Appointment appointment, Barber barber, BarberService barberService) {
+
+        requireNonNull(appointment, "Appointment must not be null");
+        requireNonNull(barber, "Barber must not be null");
+        requireNonNull(barberService, "BarberService must not be null");
+
+        LocalTime startShift = requireNonNull(barber.getStartShift(), "Barber start shift must be provided");
+        LocalTime endShift   = requireNonNull(barber.getEndShift(),   "Barber end shift must be provided");
+        LocalTime startLunch = requireNonNull(barber.getStartLunch(), "Barber lunch start must be provided");
+        LocalTime endLunch   = requireNonNull(barber.getEndLunch(),   "Barber lunch end must be provided");
+
+        Integer durationMin = requireNonNull(barberService.getDurationMin(), "Barber Service duration minutes must be provided");
+
+        LocalDateTime start = requireNonNull(appointment.getStartAt(), "Appointment start must be provided");
+        LocalDateTime end   = appointment.getEndAt() != null ? appointment.getEndAt() : start.plusMinutes(durationMin);
+        if (!end.isAfter(start)) {
+            throw new IllegalArgumentException("Appointment end must be after start");
+        }
+
+        LocalDate date = start.toLocalDate();
+        LocalDateTime shiftStart = date.atTime(startShift);
+        LocalDateTime shiftEnd   = date.atTime(endShift);
+        LocalDateTime lunchStart = date.atTime(startLunch);
+        LocalDateTime lunchEnd   = date.atTime(endLunch);
+
+        if (start.isBefore(shiftStart) || end.isAfter(shiftEnd)) {
+            throw new IllegalArgumentException("Barber is not on shift");
+        }
+
+        if (overlaps(start, end, lunchStart, lunchEnd)) {
+            throw new IllegalArgumentException("Appointment overlaps barber lunch break");
+        }
+
+        appointment.setEndAt(end);
+    }
+
+    private static boolean overlaps(LocalDateTime aStart, LocalDateTime aEnd,
+                                    LocalDateTime bStart, LocalDateTime bEnd) {
+
+        return aStart.isBefore(bEnd) && bStart.isBefore(aEnd);
     }
 }
