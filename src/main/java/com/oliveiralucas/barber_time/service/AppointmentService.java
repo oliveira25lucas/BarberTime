@@ -85,6 +85,49 @@ public class AppointmentService {
         appointmentRepository.deleteById(id);
     }
 
+    public List<AppointmentDTO> findByShopAndDate(Long shopId, LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = atEndOfDay(date);
+        return appointmentMapper.toDTO(
+                appointmentRepository.findAllByShopIdAndStartAtBetweenOrderByStartAt(shopId, startOfDay, endOfDay)
+        );
+    }
+
+    public List<AppointmentDTO> findByShopAndPeriod(Long shopId, LocalDateTime start, LocalDateTime end) {
+        validatePeriod(start, end);
+        return appointmentMapper.toDTO(
+                appointmentRepository.findAllByShopIdAndStartAtBetweenOrderByStartAt(shopId, start, end)
+        );
+    }
+
+    public List<AppointmentDTO> findByBarberAndDate(Long barberId, LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = atEndOfDay(date);
+        return appointmentMapper.toDTO(
+                appointmentRepository.findAllByBarberIdAndStartAtBetweenOrderByStartAt(barberId, startOfDay, endOfDay)
+        );
+    }
+
+    public List<AppointmentDTO> findByBarberAndPeriod(Long barberId, LocalDateTime start, LocalDateTime end) {
+        validatePeriod(start, end);
+        return appointmentMapper.toDTO(
+                appointmentRepository.findAllByBarberIdAndStartAtBetweenOrderByStartAt(barberId, start, end)
+        );
+    }
+
+    public List<AppointmentDTO> findUpcomingByCustomer(Long customerId, LocalDateTime reference) {
+        LocalDateTime start = reference != null ? reference : LocalDateTime.now();
+        return appointmentMapper.toDTO(
+                appointmentRepository.findAllByCustomerIdAndStartAtGreaterThanEqualOrderByStartAt(customerId, start)
+        );
+    }
+
+    public List<AppointmentDTO> findByStatus(AppointmentStatusEnum status) {
+        return appointmentMapper.toDTO(
+                appointmentRepository.findAllByAppointmentStatusOrderByStartAt(status)
+        );
+    }
+
     private Shop resolveShop(AppointmentDTO dto) {
         if (dto.getShop() == null || dto.getShop().getId() == null) {
             throw new NotFoundException("Shop id must be provided to associate a product");
@@ -135,7 +178,7 @@ public class AppointmentService {
         requireNonNull(barberService, "BarberService must not be null");
 
         BigDecimal totalPrice;
-        BigDecimal productPrice = product.getPrice();
+        BigDecimal productPrice = product != null ? product.getPrice() : BigDecimal.ZERO;
         BigDecimal barberServicePrice = requireNonNull(barberService.getPrice(), "BarberService price must not be null");
 
         totalPrice = barberServicePrice.add(productPrice);
@@ -220,6 +263,18 @@ public class AppointmentService {
         }
         appointment.setAppointmentStatus(SCHEDULED);
         appointment.setEndAt(end);
+    }
+
+    private static LocalDateTime atEndOfDay(LocalDate date) {
+        return date.atTime(LocalTime.MAX);
+    }
+
+    private static void validatePeriod(LocalDateTime start, LocalDateTime end) {
+        requireNonNull(start, "Start datetime must be provided");
+        requireNonNull(end, "End datetime must be provided");
+        if (!end.isAfter(start)) {
+            throw new IllegalArgumentException("End datetime must be after start datetime");
+        }
     }
 
     private static boolean overlaps(LocalDateTime aStart, LocalDateTime aEnd,
