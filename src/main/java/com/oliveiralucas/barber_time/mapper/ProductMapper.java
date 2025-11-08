@@ -1,6 +1,7 @@
 package com.oliveiralucas.barber_time.mapper;
 
 import com.oliveiralucas.barber_time.data.dto.ProductDTO;
+import com.oliveiralucas.barber_time.data.dto.summary.ProductSummaryDTO;
 import com.oliveiralucas.barber_time.model.Product;
 import org.mapstruct.*;
 
@@ -15,6 +16,21 @@ public interface ProductMapper {
 
     ProductDTO toDTO(Product entity);
     List<ProductDTO> toDTO(List<Product> entities);
+
+    @Named("productSummary")
+    @Mappings({
+            @Mapping(target = "id", source = "id"),
+            @Mapping(target = "name", source = "name"),
+            @Mapping(target = "price", source = "price"),
+            @Mapping(target = "quantity", source = "quantity"),
+            @Mapping(target = "status", source = "status"),
+            @Mapping(target = "shopId", source = "shop.id"),
+            @Mapping(target = "shopName", source = "shop.name")
+    })
+    ProductSummaryDTO toSummary(Product entity);
+
+    @IterableMapping(qualifiedByName = "productSummary")
+    List<ProductSummaryDTO> toSummary(List<Product> entities);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),

@@ -1,5 +1,6 @@
 package com.oliveiralucas.barber_time.data.dto;
 
+import com.oliveiralucas.barber_time.data.dto.summary.*;
 import com.oliveiralucas.barber_time.enums.AppointmentStatusEnum;
 import com.oliveiralucas.barber_time.enums.PaymentStatusEnum;
 import lombok.Getter;
@@ -14,11 +15,11 @@ import java.time.LocalDateTime;
 public class AppointmentDTO {
 
     private Long id;
-    private ShopDTO shop;
-    private CustomerDTO customer;
-    private BarberDTO barber;
-    private BarberServiceDTO barberService;
-    private ProductDTO product;
+    private ShopSummaryDTO shop;
+    private CustomerSummaryDTO customer;
+    private BarberSummaryDTO barber;
+    private BarberServiceSummaryDTO barberService;
+    private ProductSummaryDTO product;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private AppointmentStatusEnum appointmentStatus;

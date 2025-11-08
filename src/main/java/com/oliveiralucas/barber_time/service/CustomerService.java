@@ -1,6 +1,8 @@
 package com.oliveiralucas.barber_time.service;
 
 import com.oliveiralucas.barber_time.data.dto.CustomerDTO;
+import com.oliveiralucas.barber_time.data.dto.summary.CustomerSummaryDTO;
+import com.oliveiralucas.barber_time.enums.StatusEnum;
 import com.oliveiralucas.barber_time.exception.NotFoundException;
 import com.oliveiralucas.barber_time.mapper.CustomerMapper;
 import com.oliveiralucas.barber_time.model.Customer;
@@ -8,6 +10,7 @@ import com.oliveiralucas.barber_time.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -22,8 +25,21 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public List<CustomerDTO> findAll() {
-        return customerMapper.toDTO(customerRepository.findAll());
+    public List<CustomerSummaryDTO> findAll() {
+        Comparator<CustomerSummaryDTO> byRatingAverage = Comparator.comparing(
+                CustomerSummaryDTO::getRatingAverage,
+                Comparator.nullsLast(java.math.BigDecimal::compareTo)
+        );
+        Comparator<CustomerSummaryDTO> byRatingCount = Comparator.comparing(
+                CustomerSummaryDTO::getRatingCount,
+                Comparator.nullsLast(Integer::compare)
+        );
+
+        return customerMapper.toSummary(customerRepository.findAll())
+                .stream()
+                .filter(dto -> dto.getStatus() == StatusEnum.ACTIVE)
+                .sorted(byRatingAverage.reversed().thenComparing(byRatingCount.reversed()))
+                .toList();
     }
 
     @Transactional(readOnly = true)

@@ -20,7 +20,17 @@ import java.util.List;
 )
 public interface AppointmentMapper {
 
+    @Named("appointmentDto")
+    @Mappings({
+            @Mapping(target = "shop", qualifiedByName = "shopSummary"),
+            @Mapping(target = "customer", qualifiedByName = "customerSummary"),
+            @Mapping(target = "barber", qualifiedByName = "barberSummary"),
+            @Mapping(target = "barberService", qualifiedByName = "barberServiceSummary"),
+            @Mapping(target = "product", qualifiedByName = "productSummary")
+    })
     AppointmentDTO toDTO(Appointment entity);
+
+    @IterableMapping(qualifiedByName = "appointmentDto")
     List<AppointmentDTO> toDTO(List<Appointment> entities);
 
     @Mappings({

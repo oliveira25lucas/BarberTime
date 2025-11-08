@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.oliveiralucas.barber_time.enums.AppointmentStatusEnum.SCHEDULED;
@@ -43,7 +44,10 @@ public class AppointmentService {
 
     @Transactional
     public List<AppointmentDTO> findAll() {
-        return appointmentMapper.toDTO(appointmentRepository.findAll());
+        return appointmentMapper.toDTO(appointmentRepository.findAll())
+                .stream()
+                .sorted(Comparator.comparing(AppointmentDTO::getStartAt, Comparator.nullsLast(LocalDateTime::compareTo)))
+                .toList();
     }
 
     @Transactional

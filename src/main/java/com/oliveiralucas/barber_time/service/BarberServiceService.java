@@ -1,6 +1,8 @@
 package com.oliveiralucas.barber_time.service;
 
 import com.oliveiralucas.barber_time.data.dto.BarberServiceDTO;
+import com.oliveiralucas.barber_time.data.dto.summary.BarberServiceSummaryDTO;
+import com.oliveiralucas.barber_time.enums.StatusEnum;
 import com.oliveiralucas.barber_time.exception.NotFoundException;
 import com.oliveiralucas.barber_time.mapper.BarberServiceMapper;
 import com.oliveiralucas.barber_time.model.Barber;
@@ -10,6 +12,7 @@ import com.oliveiralucas.barber_time.repository.BarberServiceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -26,8 +29,21 @@ public class BarberServiceService {
     }
 
     @Transactional(readOnly = true)
-    public List<BarberServiceDTO> findAllBarberServices() {
-        return barberServiceMapper.toDTO(barberServiceRepository.findAll());
+    public List<BarberServiceSummaryDTO> findAllBarberServices() {
+        Comparator<BarberServiceSummaryDTO> byPrice = Comparator.comparing(
+                BarberServiceSummaryDTO::getPrice,
+                Comparator.nullsLast(java.math.BigDecimal::compareTo)
+        );
+        Comparator<BarberServiceSummaryDTO> byDuration = Comparator.comparing(
+                BarberServiceSummaryDTO::getDurationMin,
+                Comparator.nullsLast(Integer::compare)
+        );
+
+        return barberServiceMapper.toSummary(barberServiceRepository.findAll())
+                .stream()
+                .filter(dto -> dto.getStatus() == StatusEnum.ACTIVE)
+                .sorted(byPrice.thenComparing(byDuration))
+                .toList();
     }
 
     @Transactional(readOnly = true)

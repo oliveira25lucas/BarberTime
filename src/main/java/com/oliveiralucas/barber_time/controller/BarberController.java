@@ -1,6 +1,7 @@
 package com.oliveiralucas.barber_time.controller;
 
 import com.oliveiralucas.barber_time.data.dto.BarberDTO;
+import com.oliveiralucas.barber_time.data.dto.summary.BarberSummaryDTO;
 import com.oliveiralucas.barber_time.service.BarberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,7 +33,7 @@ public class BarberController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Find All Barber",
             tags = {"Barber"})
-    public List<BarberDTO> getAllBarbers() {
+    public List<BarberSummaryDTO> getAllBarbers() {
         return barberService.findAllBarbers();
     }
 

@@ -2,6 +2,7 @@ package com.oliveiralucas.barber_time.mapper;
 
 import com.oliveiralucas.barber_time.data.dto.CustomerDTO;
 import com.oliveiralucas.barber_time.data.dto.ShopDTO;
+import com.oliveiralucas.barber_time.data.dto.summary.CustomerSummaryDTO;
 import com.oliveiralucas.barber_time.model.Customer;
 import com.oliveiralucas.barber_time.model.Shop;
 import org.mapstruct.*;
@@ -16,6 +17,19 @@ public interface CustomerMapper {
 
     CustomerDTO toDTO(Customer entity);
     List<CustomerDTO> toDTO(List<Customer> entities);
+
+    @Named("customerSummary")
+    @Mappings({
+            @Mapping(target = "id", source = "id"),
+            @Mapping(target = "name", source = "name"),
+            @Mapping(target = "ratingAverage", source = "ratingAverage"),
+            @Mapping(target = "ratingCount", source = "ratingCount"),
+            @Mapping(target = "status", source = "status")
+    })
+    CustomerSummaryDTO toSummary(Customer entity);
+
+    @IterableMapping(qualifiedByName = "customerSummary")
+    List<CustomerSummaryDTO> toSummary(List<Customer> entities);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
